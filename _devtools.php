@@ -3,17 +3,17 @@
 class DevTools
 {
     public static $buffer = [];
-    
+
     public static function a2e($array, $glue = '<br>')
     {
         echo implode($glue, (array) $array);
     }
-    
+
     public static function a2b($array, $glue = '<br>')
     {
         static::$buffer[] = implode($glue, (array) $array);
     }
-    
+
     public static function a2t($array)
     {
         $out = [];
@@ -26,10 +26,10 @@ class DevTools
         }
         $out[] = '</tbody>';
         $out[] = '</table>';
-        
+
         echo static::a2b($out, '');
     }
-    
+
     public static function test($params)
     {
         $out = [];
@@ -37,7 +37,7 @@ class DevTools
         $out[] = 'params: ' . print_r($params, true);
         static::a2b($out);
     }
-    
+
     public static function getcwd()
     {
         $out = [];
@@ -46,27 +46,27 @@ class DevTools
         $out['__FILE__'] = __FILE__;
         static::a2t($out);
     }
-    
-    public static function phpinfo() 
+
+    public static function phpinfo()
     {
         phpinfo();
     }
-    
-    public static function env() 
+
+    public static function env()
     {
         static::a2b('$_SERVER');
         static::a2t($_SERVER);
         static::a2b('$_ENV');
         static::a2t($_ENV);
     }
-    
+
     public static function mysql($params)
     {
         $host = $params[0];
         $u = $params[1];
         $p = $params[2];
         $db = $params[3];
-        
+
         try{
             $dbh = new pdo( "mysql:host=$host;dbname=$db;charset=utf8", $u, $p, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
             var_dump($dbh);
@@ -75,23 +75,23 @@ class DevTools
             echo(json_encode(array('outcome' => false, 'message' => 'Unable to connect')));
         }
     }
-    
+
     public static function unzip($params)
     {
         $zip = new ZipArchive();
-        
+
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
         $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
-        
+
         $out = [];
         if (!is_file($file) || !file_exists($file)) {
             $out[] = "file: $file (does not exist)";
             static::a2b($out);
             return false;
         }
-        
+
         $out[] = 'extracting to: ' . $destination;
-        
+
         if ($zip->open($file) === true) {
             $zip->extractTo($destination);
             $zip->close();
@@ -104,43 +104,43 @@ class DevTools
             return false;
         }
     }
-    
+
     public static function pharDataExtract($params)
     {
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
         $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
-        
+
         $out = [];
         if (!is_file($file) || !file_exists($file)) {
             $out[] = "file: $file (does not exist)";
             static::a2b($out);
             return false;
         }
-        
+
         $out[] = 'extracting to: ' . $destination;
-        
+
         $phar = new PharData($file);
         $phar->extractTo($destination, null, true);
-        
+
         $out[] = 'done';
         static::a2b($out);
         return true;
     }
-    
+
     public static function dir($params)
     {
         $params['folders'] = explode(',', $params['folders']);
-        
-        $logFile = __DIR__ . '/' . '_devtools-dir.log';
+
+        $logFile = __DIR__ . '/' . '_devtools.log';
         $email = 'developerdogo@gmail.com';
-        
+
         $delete = !empty($params['delete']) ? true : false;
         $echo = !empty($params['echo']) ? true : false;
         $log = !empty($params['log']) ? true : false;
         $mail = !empty($params['mail']) ? true : false;
-        
+
         $folders = !empty($params['folders']) ? $params['folders'] : [];
-        
+
         $lines = [];
 
         $lines[] = $line = date("Y-m-d H:i:s") . "\r\n";
@@ -218,7 +218,7 @@ class DevTools
             mail($email, 'cachedel: ' . __FILE__, implode("", $lines));
         }
     }
-    
+
     public static function dirModx($params)
     {
         $params['folders'] = implode(',', [
@@ -229,7 +229,7 @@ class DevTools
         ]);
         DevTools::dir($params);
     }
-    
+
     public static function dirPresta($params)
     {
         $params['folders'] = implode(',', [
@@ -242,38 +242,59 @@ class DevTools
 
 // ====================================================================================================================
 
-// _devtools.php?c=command&p=param1:value1|eparam2:value2&m=0
+class Processor
+{
+    public $menu;
+    public $command;
+    public $parameters;
 
-// menu
-$m = isset($_GET['m']) ? $_GET['m'] : true;
+    public function process()
+    {
+        $this->bind();
+        return $this->execute();
+    }
 
-// command
-$c = isset($_GET['c']) ? $_GET['c'] : false;
+    public function bind()
+    {
+        $this->menu = isset($_GET['m']) ? $_GET['m'] : true;
+        $this->command = isset($_GET['c']) ? $_GET['c'] : false;
+        $this->parameters = isset($_GET['p']) ? $_GET['p'] : false;
+    }
 
-// parameters
-$p = isset($_GET['p']) ? $_GET['p'] : false;
+    public function parameters()
+    {
+        $ep = [];
 
-// process parameters
-$ep = [];
+        if (!empty($this->parameters)) {
+            $ep = explode('|', $this->parameters);
+            foreach ($ep as $k => $v) {
+                if (strpos($v, ':')) {
+                    $ev = explode(':', $v);
+                    $ep[$ev[0]] = $ev[1];
+                    unset($ep[$k]);
+                }
+            }
+        }
+        return $ep;
+    }
 
-if (!empty($p)) {
-    $ep = explode('|', $p);
-    foreach ($ep as $k => $v) {
-        if (strpos($v, ':')) {
-            $ev = explode(':', $v);
-            $ep[$ev[0]] = $ev[1];
-            unset($ep[$k]);
+    public function execute()
+    {
+        if (!empty($this->command)) {
+            // call a command
+            return call_user_func_array(['DevTools', $this->command], [$this->parameters()]);
         }
     }
 }
 
-if (!empty($c)) {
-    // call a command
-    call_user_func_array(['DevTools', $c], [$ep]);
-}
+// ====================================================================================================================
+
+$processor = new Processor();
+
+$processor->process();
 
 // exit showing no menu
-if (!$m) {
+if (!$processor->menu) {
     exit;
 }
 
@@ -325,7 +346,7 @@ if (!$m) {
             <?php echo implode('<br>', DevTools::$buffer); ?>
         </div>
         <?php endif; ?>
-            
+
         <div class="section menu">
             <hr class="spacer">
             <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
@@ -337,7 +358,7 @@ if (!$m) {
             <a href="_devtools.php?c=unzip&p=file:relative_filename|destination:relative_destination">unzip</a>
             <a href="_devtools.php?c=pharDataExtract&p=file:relative_filename|destination:relative_destination">pharDataExtract</a>
             <hr class="spacer">
-            <a href="_devtools.php?c=dir&p=folders:'core/cache','assets/image-cache','assets/components/gallery/cache','assets/components/phpthumbof/cache'|delete:0|echo:0|log:0|mail:0">dir</a>
+            <a href="_devtools.php?c=dir&p=folders:'folder1','folder2'|delete:0|echo:0|log:0|mail:0">dir</a>
             <hr class="spacer">
             <a href="_devtools.php?c=dirPresta&p=delete:0|echo:1|log:0|mail:0">dirPresta</a>
             <a href="_devtools.php?c=dirModx&p=delete:0|echo:1|log:0|mail:0">dirModx</a>
