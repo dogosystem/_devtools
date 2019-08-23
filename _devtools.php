@@ -2,6 +2,26 @@
 
 class DevTools
 {
+    public static $excludedFiles = [
+        '.htaccess',
+        '.gitignore',
+        'index.php',
+        'index.html',
+    ];
+
+    public static $phpInfoChecks = [
+        'memory_limit',
+        '-',
+        'upload_max_filesize',
+        'post_max_size',
+        'max_file_uploads',
+        '-',
+        'max_execution_time',
+        '-',
+        'max_input_time',
+        'max_input_vars',
+    ];
+
     public static $buffer = [];
 
     public static function a2e($array, $glue = '<br>')
@@ -186,9 +206,13 @@ class DevTools
                         $res = @rmdir($file) ? '[dir removed]' : '[dir skipped]';
                     }
                 } elseif ($file->isFile()) {
-                    $res = '[file]';
-                    if ($delete) {
-                        $res = @unlink($file) ? '[file removed]' : '[file skipped]';
+                    if (in_array($file->getFilename(), static::$excludedFiles)) {
+                        $res = '[file excluded]';
+                    } else {
+                        $res = '[file]';
+                        if ($delete) {
+                            $res = @unlink($file) ? '[file removed]' : '[file skipped]';
+                        }
                     }
                 }
                 $lines[] = $line = $file . ' : ' . $res . "\r\n";
@@ -235,6 +259,20 @@ class DevTools
         $params['folders'] = implode(',', [
             'app/cache',
             'var/cache',
+        ]);
+        DevTools::dir($params);
+    }
+
+    public static function dirApx($params)
+    {
+        $params['folders'] = implode(',', [
+            '../../bootstrap/cache',
+            '../../storage/debugbar',
+            '../../storage/framework/cache/data',
+            '../../storage/framework/sessions',
+            '../../storage/framework/testing',
+            '../../storage/framework/views',
+            '../../storage/logs',
         ]);
         DevTools::dir($params);
     }
@@ -306,6 +344,16 @@ if (!$processor->menu) {
     <meta charset="utf-8">
     <title>DevTools</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 14px;
+        }
+        body {
+            font-size: 14px;
+            font-family: sans-serif;
+        }
         .app .section {
             background-color: #F3F3F3;
             padding: 40px 20px;
@@ -337,6 +385,28 @@ if (!$processor->menu) {
             width: 100%;
             flex: 0 0 100%;
         }
+        .app ul {
+            display: block;
+            margin: 0;
+            padding: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .app li {
+            display: flex;
+        }
+        .app .key,
+        .app .value {
+            flex: 0 0 50%;
+            padding: 0 5px;
+        }
+        .app .key {
+            text-align: right;
+            font-weight: 700;
+        }
+        .app .v-spacer {
+            height: 10px;
+        }
     </style>
 </head>
 <body>
@@ -348,26 +418,55 @@ if (!$processor->menu) {
         <?php endif; ?>
 
         <div class="section menu">
+
             <hr class="spacer">
+
             <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
             <a href="_devtools.php?c=getcwd">getcwd</a>
             <a href="_devtools.php?c=phpinfo">phpinfo</a>
             <a href="_devtools.php?c=env">env</a>
             <a href="_devtools.php?c=mysql&p=localhost|user|pass|database">mysql</a>
+
             <hr class="spacer">
+
             <a href="_devtools.php?c=unzip&p=file:relative_filename|destination:relative_destination">unzip</a>
             <a href="_devtools.php?c=pharDataExtract&p=file:relative_filename|destination:relative_destination">pharDataExtract</a>
+
             <hr class="spacer">
+
             <a href="_devtools.php?c=dir&p=folders:'folder1','folder2'|delete:0|echo:0|log:0|mail:0">dir</a>
+
             <hr class="spacer">
+
             <a href="_devtools.php?c=dirPresta&p=delete:0|echo:1|log:0|mail:0">dirPresta</a>
             <a href="_devtools.php?c=dirModx&p=delete:0|echo:1|log:0|mail:0">dirModx</a>
+            <a href="_devtools.php?c=dirApx&p=delete:0|echo:1|log:0|mail:0">dirApx</a>
+
             <div class="spacer"></div>
+
             <a href="_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:0">clearPresta</a>
             <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
+            <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
+
             <hr class="spacer">
+
+        </div>
+        <div class="section php-info-checks">
+                <div class="php-info-checks">
+                    <ul>
+                        <?php foreach (DevTools::$phpInfoChecks as $check) : ?>
+                            <li>
+                                <?php if ($check === '-') : ?>
+                                    <div class="v-spacer"></div>
+                                    <?php continue; ?>
+                                <?php endif; ?>
+                                <div class="key"><?php echo $check; ?>:</div>
+                                <div class="value"><?php echo ini_get($check); ?></div>
+                            </li>
+                        <?php endforeach ?>
+                    </ul>
+                </div>
         </div>
     </div>
 </body>
 </html>
-
