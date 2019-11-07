@@ -152,7 +152,14 @@ class DevTools
         $params['folders'] = explode(',', $params['folders']);
 
         $logFile = __DIR__ . '/' . '_devtools.log';
-        $email = 'developerdogo@gmail.com';
+        $email = !empty($params['email']) ? $params['email'] : 'developerdogo@gmail.com';
+        $from = !empty($params['from']) ? $params['from'] : false;
+
+        $headers = '';
+
+        if ($from) {
+            $headers  = 'From: ' . $from;
+        }
 
         $delete = !empty($params['delete']) ? true : false;
         $echo = !empty($params['echo']) ? true : false;
@@ -239,7 +246,7 @@ class DevTools
         }
 
         if ($mail) {
-            mail($email, 'cachedel: ' . __FILE__, implode("", $lines));
+            mail($email, 'cachedel: ' . __FILE__, implode("", $lines), $headers);
         }
     }
 
