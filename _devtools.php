@@ -361,6 +361,15 @@ if (!$processor->menu) {
             font-size: 14px;
             font-family: sans-serif;
         }
+        .app {
+            margin-top: -20px;
+            margin-bottom: -20px;
+        }
+        .app .version {
+            position: absolute;
+            right: 30px;
+            top: 20px;
+        }
         .app .section {
             background-color: #F3F3F3;
             padding: 40px 20px;
@@ -426,6 +435,8 @@ if (!$processor->menu) {
 
         <div class="section menu">
 
+            <div class="version">[ 191107 ] [ 0.0.1 ]</div>
+
             <hr class="spacer">
 
             <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
@@ -457,6 +468,17 @@ if (!$processor->menu) {
 
             <hr class="spacer">
 
+            <br>
+
+            http://domain.tld/_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
+
+            <br><br>
+
+            0 4 * * * wget -O /dev/null -o /dev/null 'http://domain.tld/_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+
+            <br><br>
+
+            <hr class="spacer">
         </div>
         <div class="section php-info-checks">
                 <div class="php-info-checks">
