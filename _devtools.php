@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.10';
+    const VERSION = '0.0.11';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -27,7 +27,7 @@ class App
 
         $link = '_devtools.php?act=download&hash=' . $hash;
 
-        if ($name > App::VERSION) {
+        if (version_compare($name, App::VERSION) === 1) {
             $out = '<a href="' . $link . '">' . $name . '</a>';
         } else {
             $out = '<span class="blended">' . $name . '</span>';
