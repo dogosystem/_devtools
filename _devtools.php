@@ -435,7 +435,7 @@ if (!$processor->menu) {
 
         <div class="section menu">
 
-            <div class="version">[ 191107 ] [ 0.0.1 ]</div>
+            <div class="version">[ 191108 ] [ 0.0.2 ]</div>
 
             <hr class="spacer">
 
