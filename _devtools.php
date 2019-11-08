@@ -2,12 +2,17 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.6';
+    const VERSION = '0.0.7';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
+    
+    public static function home()
+    {
+        return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+    }
 
     public static function checkUpdates()
     {
@@ -52,7 +57,7 @@ class App
 
         $localFilePath = __FILE__;
 
-        $http = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+        $http = App::home();
 
         file_put_contents($localFilePath, $remoteFileContent);
 
@@ -431,23 +436,29 @@ if (!$processor->menu) {
             margin-top: -20px;
             margin-bottom: -20px;
         }
-        .app .name {
-            position: absolute;
-            left: 30px;
-            top: 20px;
-        }
-        .app .no-border {
-            border: none;
-        }
-        .app .version {
-            position: absolute;
-            right: 30px;
-            top: 20px;
-        }
         .app .section {
             background-color: #F3F3F3;
             padding: 40px 20px;
             margin: 20px 0 20px 0;
+        }
+        .app .topmenu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+        .app .name {
+            /*position: absolute;*/
+            left: 30px;
+            top: 20px;
+        }
+        .app .version {
+            right: 30px;
+            top: 20px;
+        }
+        
+        .app .no-border {
+            border: none;
         }
         .app table td {
             border: 1px solid lightgray;
@@ -501,20 +512,20 @@ if (!$processor->menu) {
 </head>
 <body>
     <div class="app">
+        <div class="section topmenu">
+
+            <div class="name"><a class="no-border" href="<?php echo App::home(); ?>"><?php echo App::NAME; ?></a></div>
+            <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
+            
+        </div>
+        
         <?php if (!empty(DevTools::$buffer)): ?>
         <div class="section display">
             <?php echo implode('<br>', DevTools::$buffer); ?>
         </div>
         <?php endif; ?>
-        <?php /*echo $processor->checkUpdates();*/ ?>
 
         <div class="section menu">
-
-            <div class="name"><a class="no-border" href=""><?php echo App::NAME; ?></a></div>
-            <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
-
-            <hr class="spacer">
-
             <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
             <a href="_devtools.php?c=getcwd">getcwd</a>
             <a href="_devtools.php?c=phpinfo">phpinfo</a>
