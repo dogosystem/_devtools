@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.12';
+    const VERSION = '0.0.13';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -467,7 +467,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             border: 1px solid lightgray;
             padding: 10px;
         }
-        .app .menu {
+        .app .menu,
+        .app .examples {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -556,19 +557,16 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
             <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
 
-            <hr class="spacer">
+        </div>
 
-            <br>
+        <div class="section examples">
 
-            http://domain.tld/_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
-
-            <br><br>
-
-            0 4 * * * wget -O /dev/null -o /dev/null 'http://domain.tld/_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+            <?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
 
             <br><br>
 
-            <hr class="spacer">
+            0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+
         </div>
         <div class="section php-info-checks">
                 <div class="php-info-checks">
