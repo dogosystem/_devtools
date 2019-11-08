@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.13';
+    const VERSION = '0.0.14';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -441,8 +441,10 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
         }
         .app .section {
             background-color: #F3F3F3;
-            padding: 40px 20px;
-            margin: 20px 0 20px 0;
+            border-top: 1px solid #D3D3D3;
+            border-bottom: 1px solid #D3D3D3;
+            padding: 20px 20px;
+            margin: 15px 0 15px 0;
         }
         .app .topmenu {
             display: flex;
@@ -489,6 +491,10 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             display: block;
             width: 100%;
             flex: 0 0 100%;
+            border-color: #D3D3D3;
+            border-top: none;
+            border-left: none;
+            border-right: none;
         }
         .app ul {
             display: block;
