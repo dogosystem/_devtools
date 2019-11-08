@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.11';
+    const VERSION = '0.0.12';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -16,10 +16,10 @@ class App
 
     public static function checkUpdates()
     {
-        $url = App::API . '/' . App::REPO . '/refs/tags';
+        $url = App::API . '/' . App::REPO . '/refs/tags?sort=-name';
         $res = json_decode(file_get_contents($url), true);
         $values = $res['values'];
-        $lastTag = array_pop($values);
+        $lastTag = array_shift ($values);
 
         $name = $lastTag['name'];
 
