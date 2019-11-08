@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.8';
+    const VERSION = '0.0.10';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -413,6 +413,10 @@ if (!$processor->menu) {
 
 // ====================================================================================================================
 
+?>
+<?php
+header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 ?>
 <!doctype html>
 <html>
