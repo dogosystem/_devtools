@@ -8,7 +8,7 @@ class App
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
-    
+
     public static function home()
     {
         return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
@@ -414,6 +414,7 @@ if (!$processor->menu) {
 // ====================================================================================================================
 
 ?>
+<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -454,7 +455,7 @@ if (!$processor->menu) {
             right: 30px;
             top: 20px;
         }
-        
+
         .app .no-border {
             border: none;
         }
@@ -514,9 +515,9 @@ if (!$processor->menu) {
 
             <div class="name"><a class="no-border" href="<?php echo App::home(); ?>"><?php echo App::NAME; ?></a></div>
             <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
-            
+
         </div>
-        
+
         <?php if (!empty(DevTools::$buffer)): ?>
         <div class="section display">
             <?php echo implode('<br>', DevTools::$buffer); ?>
