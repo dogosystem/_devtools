@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.7';
+    const VERSION = '0.0.8';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -433,8 +433,6 @@ if (!$processor->menu) {
             color: rgba(0, 0, 0, 0.5);
         }
         .app {
-            margin-top: -20px;
-            margin-bottom: -20px;
         }
         .app .section {
             background-color: #F3F3F3;
