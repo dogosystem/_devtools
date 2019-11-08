@@ -1,4 +1,34 @@
 <?php
+class App
+{
+    const DATE = '191108';
+    const VERSION = '0.0.3';
+    const FILE = '_devtools.php';
+    const API = 'https://api.bitbucket.org/2.0/repositories';
+    const URL = 'https://bitbucket.org';
+    const REPO = 'dogosystem/_devtools';
+
+    public static function checkUpdates()
+    {
+        $url = App::API . '/' . App::REPO . '/refs/tags';
+        $res = json_decode(file_get_contents($url), true);
+        $values = $res['values'];
+        $lastTag = array_pop($values);
+        $name = $lastTag['name'];
+
+        $hash = $lastTag['target']['hash'];
+
+        $link = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
+
+        if ($name > App::VERSION) {
+            $out = '<a href="' . $link . '">' . $name . '</a>';
+        } else {
+            $out = $name;
+        }
+
+        return $out;
+    }
+}
 
 class DevTools
 {
@@ -432,10 +462,11 @@ if (!$processor->menu) {
             <?php echo implode('<br>', DevTools::$buffer); ?>
         </div>
         <?php endif; ?>
+        <?php /*echo $processor->checkUpdates();*/ ?>
 
         <div class="section menu">
 
-            <div class="version">[ 191108 ] [ 0.0.2 ]</div>
+            <div class="version"><?php echo App::checkUpdates(); ?> [ <?php echo App::DATE ?> ] [ <?php echo App::VERSION ?> ]</div>
 
             <hr class="spacer">
 
