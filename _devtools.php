@@ -2,7 +2,8 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.5';
+    const VERSION = '0.0.6';
+    const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
@@ -430,6 +431,14 @@ if (!$processor->menu) {
             margin-top: -20px;
             margin-bottom: -20px;
         }
+        .app .name {
+            position: absolute;
+            left: 30px;
+            top: 20px;
+        }
+        .app .no-border {
+            border: none;
+        }
         .app .version {
             position: absolute;
             right: 30px;
@@ -501,6 +510,7 @@ if (!$processor->menu) {
 
         <div class="section menu">
 
+            <div class="name"><a class="no-border" href=""><?php echo App::NAME; ?></a></div>
             <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
 
             <hr class="spacer">
