@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.3';
+    const VERSION = '0.0.4';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
@@ -14,11 +14,12 @@ class App
         $res = json_decode(file_get_contents($url), true);
         $values = $res['values'];
         $lastTag = array_pop($values);
+
         $name = $lastTag['name'];
 
         $hash = $lastTag['target']['hash'];
 
-        $link = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
+        $link = '_devtools.php?act=download&hash=' . $hash;
 
         if ($name > App::VERSION) {
             $out = '<a href="' . $link . '">' . $name . '</a>';
@@ -27,6 +28,35 @@ class App
         }
 
         return $out;
+    }
+
+    public static function action()
+    {
+        $action = !empty($_GET['act']) ? $_GET['act'] : null;
+        if ($action == 'download') {
+            App::download();
+        }
+    }
+
+    public static function download()
+    {
+        $hash = !empty($_GET['hash']) ? $_GET['hash'] : null;
+
+        if (is_null($hash)) {
+            return false;
+        }
+
+        $remoteFile = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
+        $remoteFileContent = file_get_contents($remoteFile);
+
+        $localFilePath = __FILE__;
+
+        $http = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+
+        file_put_contents($localFilePath, $remoteFileContent);
+
+        header('Location: ' . $http);
+        exit;
     }
 }
 
@@ -363,6 +393,8 @@ class Processor
 }
 
 // ====================================================================================================================
+
+App::action();
 
 $processor = new Processor();
 
