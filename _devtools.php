@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191108';
-    const VERSION = '0.0.4';
+    const VERSION = '0.0.5';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
@@ -24,7 +24,7 @@ class App
         if ($name > App::VERSION) {
             $out = '<a href="' . $link . '">' . $name . '</a>';
         } else {
-            $out = $name;
+            $out = '<span class="blended">' . $name . '</span>';
         }
 
         return $out;
@@ -423,6 +423,9 @@ if (!$processor->menu) {
             font-size: 14px;
             font-family: sans-serif;
         }
+        .blended {
+            color: rgba(0, 0, 0, 0.5);
+        }
         .app {
             margin-top: -20px;
             margin-bottom: -20px;
@@ -498,7 +501,7 @@ if (!$processor->menu) {
 
         <div class="section menu">
 
-            <div class="version"><?php echo App::checkUpdates(); ?> [ <?php echo App::DATE ?> ] [ <?php echo App::VERSION ?> ]</div>
+            <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
 
             <hr class="spacer">
 
