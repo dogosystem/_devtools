@@ -2,7 +2,7 @@
 class App
 {
     const DATE = '191212';
-    const VERSION = '0.0.15';
+    const VERSION = '0.0.16';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -11,7 +11,7 @@ class App
 
     public static function home()
     {
-        return $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+        return ($_SERVER['HTTP_X_FORWARDED_PROTO'] ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
     }
 
     public static function checkUpdates()
