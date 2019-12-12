@@ -1,8 +1,8 @@
 <?php
 class App
 {
-    const DATE = '191108';
-    const VERSION = '0.0.14';
+    const DATE = '191212';
+    const VERSION = '0.0.15';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -68,14 +68,14 @@ class App
 
 class DevTools
 {
-    public static $excludedFiles = [
+    public static $excludedFiles = array(
         '.htaccess',
         '.gitignore',
         'index.php',
         'index.html',
-    ];
+    );
 
-    public static $phpInfoChecks = [
+    public static $phpInfoChecks = array(
         'memory_limit',
         '-',
         'upload_max_filesize',
@@ -86,9 +86,9 @@ class DevTools
         '-',
         'max_input_time',
         'max_input_vars',
-    ];
+    );
 
-    public static $buffer = [];
+    public static $buffer = array();
 
     public static function a2e($array, $glue = '<br>')
     {
@@ -97,12 +97,12 @@ class DevTools
 
     public static function a2b($array, $glue = '<br>')
     {
-        static::$buffer[] = implode($glue, (array) $array);
+        self::$buffer[] = implode($glue, (array) $array);
     }
 
     public static function a2t($array)
     {
-        $out = [];
+        $out = array();
         $out[] = '<table>';
         $out[] = '<tbody>';
         foreach ($array as $k => $v) {
@@ -113,24 +113,24 @@ class DevTools
         $out[] = '</tbody>';
         $out[] = '</table>';
 
-        echo static::a2b($out, '');
+        echo self::a2b($out, '');
     }
 
     public static function test($params)
     {
-        $out = [];
+        $out = array();
         $out[] = 'test';
         $out[] = 'params: ' . print_r($params, true);
-        static::a2b($out);
+        self::a2b($out);
     }
 
     public static function getcwd()
     {
-        $out = [];
+        $out = array();
         $out['getcwd'] = getcwd();
         $out['__DIR__'] = __DIR__;
         $out['__FILE__'] = __FILE__;
-        static::a2t($out);
+        self::a2t($out);
     }
 
     public static function phpinfo()
@@ -140,10 +140,10 @@ class DevTools
 
     public static function env()
     {
-        static::a2b('$_SERVER');
-        static::a2t($_SERVER);
-        static::a2b('$_ENV');
-        static::a2t($_ENV);
+        self::a2b('$_SERVER');
+        self::a2t($_SERVER);
+        self::a2b('$_ENV');
+        self::a2t($_ENV);
     }
 
     public static function mysql($params)
@@ -169,10 +169,10 @@ class DevTools
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
         $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
 
-        $out = [];
+        $out = array();
         if (!is_file($file) || !file_exists($file)) {
             $out[] = "file: $file (does not exist)";
-            static::a2b($out);
+            self::a2b($out);
             return false;
         }
 
@@ -182,11 +182,11 @@ class DevTools
             $zip->extractTo($destination);
             $zip->close();
             $out[] = "file: $file (uzipped)";
-            static::a2b($out);
+            self::a2b($out);
             return true;
         } else {
             $out[] = "file: $file (could not be unzipped)";
-            static::a2b($out);
+            self::a2b($out);
             return false;
         }
     }
@@ -196,10 +196,10 @@ class DevTools
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
         $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
 
-        $out = [];
+        $out = array();
         if (!is_file($file) || !file_exists($file)) {
             $out[] = "file: $file (does not exist)";
-            static::a2b($out);
+            self::a2b($out);
             return false;
         }
 
@@ -209,7 +209,7 @@ class DevTools
         $phar->extractTo($destination, null, true);
 
         $out[] = 'done';
-        static::a2b($out);
+        self::a2b($out);
         return true;
     }
 
@@ -234,7 +234,7 @@ class DevTools
 
         $folders = !empty($params['folders']) ? $params['folders'] : [];
 
-        $lines = [];
+        $lines = array();
 
         $lines[] = $line = date("Y-m-d H:i:s") . "\r\n";
 
@@ -261,7 +261,15 @@ class DevTools
                 }
                 continue;
             }
-
+            
+            $lines[] = $line = $path . ' [open]' . "\r\n";
+            if ($echo) {
+                echo nl2br($line);
+            }
+            if ($log) {
+                fwrite($fp, $line);
+            }
+            
             $di = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
             $ri = new RecursiveIteratorIterator($di, RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -279,7 +287,7 @@ class DevTools
                         $res = @rmdir($file) ? '[dir removed]' : '[dir skipped]';
                     }
                 } elseif ($file->isFile()) {
-                    if (in_array($file->getFilename(), static::$excludedFiles)) {
+                    if (in_array($file->getFilename(), self::$excludedFiles)) {
                         $res = '[file excluded]';
                     } else {
                         $res = '[file]';
@@ -335,6 +343,15 @@ class DevTools
         ]);
         DevTools::dir($params);
     }
+    
+    public static function dirPresta16($params)
+    {
+        $params['folders'] = implode(',', [
+            'cache/smarty',
+            'cache/tcpdf',
+        ]);
+        DevTools::dir($params);
+    }
 
     public static function dirApx($params)
     {
@@ -374,7 +391,7 @@ class Processor
 
     public function parameters()
     {
-        $ep = [];
+        $ep = array();
 
         if (!empty($this->parameters)) {
             $ep = explode('|', $this->parameters);
@@ -554,12 +571,14 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             <hr class="spacer">
 
             <a href="_devtools.php?c=dirPresta&p=delete:0|echo:1|log:0|mail:0">dirPresta</a>
+            <a href="_devtools.php?c=dirPresta16&p=delete:0|echo:1|log:0|mail:0">dirPresta16</a>
             <a href="_devtools.php?c=dirModx&p=delete:0|echo:1|log:0|mail:0">dirModx</a>
             <a href="_devtools.php?c=dirApx&p=delete:0|echo:1|log:0|mail:0">dirApx</a>
 
             <div class="spacer"></div>
 
             <a href="_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:0">clearPresta</a>
+            <a href="_devtools.php?c=dirPresta16&p=delete:1|echo:0|log:1|mail:0">clearPresta16</a>
             <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
             <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
 
