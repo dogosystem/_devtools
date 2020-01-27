@@ -1,8 +1,8 @@
 <?php
 class App
 {
-    const DATE = '191212';
-    const VERSION = '0.0.16';
+    const DATE = '200127';
+    const VERSION = '0.0.17';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -11,7 +11,7 @@ class App
 
     public static function home()
     {
-        return ($_SERVER['HTTP_X_FORWARDED_PROTO'] ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+        return (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
     }
 
     public static function checkUpdates()
@@ -261,7 +261,7 @@ class DevTools
                 }
                 continue;
             }
-            
+
             $lines[] = $line = $path . ' [open]' . "\r\n";
             if ($echo) {
                 echo nl2br($line);
@@ -269,7 +269,7 @@ class DevTools
             if ($log) {
                 fwrite($fp, $line);
             }
-            
+
             $di = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
             $ri = new RecursiveIteratorIterator($di, RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -343,7 +343,7 @@ class DevTools
         ]);
         DevTools::dir($params);
     }
-    
+
     public static function dirPresta16($params)
     {
         $params['folders'] = implode(',', [
