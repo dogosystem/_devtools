@@ -2,16 +2,24 @@
 class App
 {
     const DATE = '200127';
-    const VERSION = '0.0.17';
+    const VERSION = '0.0.18';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
 
+    public static function scheme()
+    {
+        $scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME'];
+        if (empty($scheme)) {
+            $scheme = 'http';
+        }
+    }
+
     public static function home()
     {
-        return (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+        return App::scheme() . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
     }
 
     public static function checkUpdates()
