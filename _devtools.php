@@ -2,13 +2,12 @@
 class App
 {
     const DATE = '200211';
-    const VERSION = '0.0.20';
+    const VERSION = '0.0.21';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
-
     public static function scheme()
     {
         $scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME'];
@@ -25,18 +24,23 @@ class App
 
     public static function checkUpdates()
     {
+        // https://api.bitbucket.org/2.0/repositories/dogosystem/_devtools/refs/tags?sort=-name
         $url = App::API . '/' . App::REPO . '/refs/tags?sort=-name';
         $res = json_decode(file_get_contents($url), true);
+
         $values = $res['values'];
-        $lastTag = array_shift ($values);
+        $lastTag = array_shift($values);
 
         $name = $lastTag['name'];
 
+        if (!empty($_GET['update'])) {
+            $name = $_GET['update'];
+        }
         $hash = $lastTag['target']['hash'];
 
         $link = '_devtools.php?act=download&hash=' . $hash;
 
-        if (version_compare($name, App::VERSION) === 1) {
+        if (version_compare($name, App::VERSION) === 1 || !empty($_GET['update'])) {
             $out = '<a href="' . $link . '">' . $name . '</a>';
         } else {
             $out = '<span class="blended">' . $name . '</span>';
