@@ -1,8 +1,8 @@
 <?php
 class App
 {
-    const DATE = '200127';
-    const VERSION = '0.0.19';
+    const DATE = '200211';
+    const VERSION = '0.0.20';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -441,6 +441,13 @@ if (!$processor->menu) {
 
 ?>
 <?php
+session_id('-devtools-');
+session_start();
+if (!empty($_POST['login']) && !empty($_POST['password'])) {
+    if ($_POST['login'] === 'devtools' && md5($_POST['password']) === '477dcf4d38c9d52e91bde1c37ba75432') {
+        $_SESSION['logged'] = true;
+    }
+}
 header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 ?>
@@ -477,6 +484,13 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             flex-wrap: wrap;
             justify-content: space-between;
             padding: 10px 20px;
+        }
+        .app .login {
+            display: flex;
+            justify-content: center;
+        }
+        .app .login * {
+            margin: 1rem 0.5rem;
         }
         .app .name {
             /*position: absolute;*/
@@ -548,76 +562,90 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 </head>
 <body>
     <div class="app">
-        <div class="section topmenu">
 
-            <div class="name"><a class="no-border" href="<?php echo App::home(); ?>"><?php echo App::NAME; ?></a></div>
-            <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
+        <?php if (empty($_SESSION['logged'])): ?>
 
-        </div>
+            <div class="login">
+                <form action="" method="post" accept-charset="utf-8">
+                    <input type="text" name="login">
+                    <input type="password" name="password">
+                    <input type="submit" name="submit">
+                </form>
+            </div>
 
-        <?php if (!empty(DevTools::$buffer)): ?>
-        <div class="section display">
-            <?php echo implode('<br>', DevTools::$buffer); ?>
-        </div>
+        <?php else : ?>
+
+            <div class="section topmenu">
+
+                <div class="name"><a class="no-border" href="<?php echo App::home(); ?>"><?php echo App::NAME; ?></a></div>
+                <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
+
+            </div>
+
+            <?php if (!empty(DevTools::$buffer)): ?>
+            <div class="section display">
+                <?php echo implode('<br>', DevTools::$buffer); ?>
+            </div>
+            <?php endif; ?>
+
+            <div class="section menu">
+                <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
+                <a href="_devtools.php?c=getcwd">getcwd</a>
+                <a href="_devtools.php?c=phpinfo">phpinfo</a>
+                <a href="_devtools.php?c=env">env</a>
+                <a href="_devtools.php?c=mysql&p=localhost|user|pass|database">mysql</a>
+
+                <hr class="spacer">
+
+                <a href="_devtools.php?c=unzip&p=file:relative_filename|destination:relative_destination">unzip</a>
+                <a href="_devtools.php?c=pharDataExtract&p=file:relative_filename|destination:relative_destination">pharDataExtract</a>
+
+                <hr class="spacer">
+
+                <a href="_devtools.php?c=dir&p=folders:'folder1','folder2'|delete:0|echo:0|log:0|mail:0">dir</a>
+
+                <hr class="spacer">
+
+                <a href="_devtools.php?c=dirPresta&p=delete:0|echo:1|log:0|mail:0">dirPresta</a>
+                <a href="_devtools.php?c=dirPresta16&p=delete:0|echo:1|log:0|mail:0">dirPresta16</a>
+                <a href="_devtools.php?c=dirModx&p=delete:0|echo:1|log:0|mail:0">dirModx</a>
+                <a href="_devtools.php?c=dirApx&p=delete:0|echo:1|log:0|mail:0">dirApx</a>
+
+                <div class="spacer"></div>
+
+                <a href="_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:0">clearPresta</a>
+                <a href="_devtools.php?c=dirPresta16&p=delete:1|echo:0|log:1|mail:0">clearPresta16</a>
+                <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
+                <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
+
+            </div>
+
+            <div class="section examples">
+
+                <?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
+
+                <br><br>
+
+                0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+
+            </div>
+            <div class="section php-info-checks">
+                    <div class="php-info-checks">
+                        <ul>
+                            <?php foreach (DevTools::$phpInfoChecks as $check) : ?>
+                                <li>
+                                    <?php if ($check === '-') : ?>
+                                        <div class="v-spacer"></div>
+                                        <?php continue; ?>
+                                    <?php endif; ?>
+                                    <div class="key"><?php echo $check; ?>:</div>
+                                    <div class="value"><?php echo ini_get($check); ?></div>
+                                </li>
+                            <?php endforeach ?>
+                        </ul>
+                    </div>
+            </div>
         <?php endif; ?>
-
-        <div class="section menu">
-            <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
-            <a href="_devtools.php?c=getcwd">getcwd</a>
-            <a href="_devtools.php?c=phpinfo">phpinfo</a>
-            <a href="_devtools.php?c=env">env</a>
-            <a href="_devtools.php?c=mysql&p=localhost|user|pass|database">mysql</a>
-
-            <hr class="spacer">
-
-            <a href="_devtools.php?c=unzip&p=file:relative_filename|destination:relative_destination">unzip</a>
-            <a href="_devtools.php?c=pharDataExtract&p=file:relative_filename|destination:relative_destination">pharDataExtract</a>
-
-            <hr class="spacer">
-
-            <a href="_devtools.php?c=dir&p=folders:'folder1','folder2'|delete:0|echo:0|log:0|mail:0">dir</a>
-
-            <hr class="spacer">
-
-            <a href="_devtools.php?c=dirPresta&p=delete:0|echo:1|log:0|mail:0">dirPresta</a>
-            <a href="_devtools.php?c=dirPresta16&p=delete:0|echo:1|log:0|mail:0">dirPresta16</a>
-            <a href="_devtools.php?c=dirModx&p=delete:0|echo:1|log:0|mail:0">dirModx</a>
-            <a href="_devtools.php?c=dirApx&p=delete:0|echo:1|log:0|mail:0">dirApx</a>
-
-            <div class="spacer"></div>
-
-            <a href="_devtools.php?c=dirPresta&p=delete:1|echo:0|log:1|mail:0">clearPresta</a>
-            <a href="_devtools.php?c=dirPresta16&p=delete:1|echo:0|log:1|mail:0">clearPresta16</a>
-            <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
-            <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
-
-        </div>
-
-        <div class="section examples">
-
-            <?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
-
-            <br><br>
-
-            0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
-
-        </div>
-        <div class="section php-info-checks">
-                <div class="php-info-checks">
-                    <ul>
-                        <?php foreach (DevTools::$phpInfoChecks as $check) : ?>
-                            <li>
-                                <?php if ($check === '-') : ?>
-                                    <div class="v-spacer"></div>
-                                    <?php continue; ?>
-                                <?php endif; ?>
-                                <div class="key"><?php echo $check; ?>:</div>
-                                <div class="value"><?php echo ini_get($check); ?></div>
-                            </li>
-                        <?php endforeach ?>
-                    </ul>
-                </div>
-        </div>
     </div>
 </body>
 </html>
