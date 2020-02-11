@@ -1,8 +1,26 @@
 <?php
+session_id('-devtools-');
+session_start();
+if (isset($_GET['logout'])) {
+    $_SESSION['logged'] = false;
+    session_destroy();
+    header('Location: ' . App::home());
+}
+if (!empty($_POST['login']) && !empty($_POST['password'])) {
+    if ($_POST['login'] === 'devtools' && md5($_POST['password']) === '477dcf4d38c9d52e91bde1c37ba75432') {
+        $_SESSION['logged'] = true;
+    }
+}
+
+header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+?>
+
+<?php
 class App
 {
     const DATE = '200211';
-    const VERSION = '0.0.21';
+    const VERSION = '0.0.22';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.bitbucket.org/2.0/repositories';
@@ -444,17 +462,6 @@ if (!$processor->menu) {
 // ====================================================================================================================
 
 ?>
-<?php
-session_id('-devtools-');
-session_start();
-if (!empty($_POST['login']) && !empty($_POST['password'])) {
-    if ($_POST['login'] === 'devtools' && md5($_POST['password']) === '477dcf4d38c9d52e91bde1c37ba75432') {
-        $_SESSION['logged'] = true;
-    }
-}
-header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
-header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
-?>
 <!doctype html>
 <html>
 <head>
@@ -567,7 +574,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <body>
     <div class="app">
 
-        <?php if (empty($_SESSION['logged'])): ?>
+        <?php if (!isset($_SESSION['logged']) || $_SESSION['logged'] !== true): ?>
 
             <div class="login">
                 <form action="" method="post" accept-charset="utf-8">
@@ -582,7 +589,7 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
             <div class="section topmenu">
 
                 <div class="name"><a class="no-border" href="<?php echo App::home(); ?>"><?php echo App::NAME; ?></a></div>
-                <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ]</div>
+                <div class="version"><?php echo App::checkUpdates(); ?> (<?php echo App::DATE ?>) [ <?php echo App::VERSION ?> ] [<a class="no-border" href="<?php echo App::home(); ?>?logout">^</a>]</div>
 
             </div>
 
