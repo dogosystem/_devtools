@@ -20,12 +20,13 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 class App
 {
     const DATE = '200424';
-    const VERSION = '0.0.24';
+    const VERSION = '0.0.25';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
     const URL = 'https://raw.githubusercontent.com'; // 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
+
     public static function scheme()
     {
         $scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $_SERVER['REQUEST_SCHEME'];
@@ -40,12 +41,19 @@ class App
         return App::scheme() . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
     }
 
+    public static function context()
+    {
+        $opts = ['http' => ['method' => 'GET','header' => ['User-Agent: PHP']]];
+        return stream_context_create($opts);
+    }
+
     public static function checkUpdates()
     {
         // https://raw.githubusercontent.com/dogosystem/_devtools/0.0.22/_devtools.php
         // https://api.github.com/repos/dogosystem/_devtools/tags // https://api.bitbucket.org/2.0/repositories/dogosystem/_devtools/refs/tags?sort=-name
         $url = App::API . '/' . App::REPO . '/tags'; // $url = App::API . '/' . App::REPO . '/refs/tags?sort=-name';
-        $res = json_decode(file_get_contents($url), true);
+
+        $res = json_decode(file_get_contents($url, false, App::context()), true);
 
         $values = $res; // $values = $res['values'];
         if (!is_array($values)) {
@@ -88,7 +96,7 @@ class App
         }
 
         $remoteFile = App::URL . '/' . App::REPO . '/' . $tag . '/' . App::FILE; // $remoteFile = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
-        $remoteFileContent = file_get_contents($remoteFile);
+        $remoteFileContent = file_get_contents($remoteFile, false, App::context());
 
         $localFilePath = __FILE__;
 
