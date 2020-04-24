@@ -19,12 +19,12 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '200211';
-    const VERSION = '0.0.22';
+    const DATE = '200424';
+    const VERSION = '0.0.24';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
-    const API = 'https://api.bitbucket.org/2.0/repositories';
-    const URL = 'https://bitbucket.org';
+    const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
+    const URL = 'https://raw.githubusercontent.com'; // 'https://bitbucket.org';
     const REPO = 'dogosystem/_devtools';
     public static function scheme()
     {
@@ -42,11 +42,15 @@ class App
 
     public static function checkUpdates()
     {
-        // https://api.bitbucket.org/2.0/repositories/dogosystem/_devtools/refs/tags?sort=-name
-        $url = App::API . '/' . App::REPO . '/refs/tags?sort=-name';
+        // https://raw.githubusercontent.com/dogosystem/_devtools/0.0.22/_devtools.php
+        // https://api.github.com/repos/dogosystem/_devtools/tags // https://api.bitbucket.org/2.0/repositories/dogosystem/_devtools/refs/tags?sort=-name
+        $url = App::API . '/' . App::REPO . '/tags'; // $url = App::API . '/' . App::REPO . '/refs/tags?sort=-name';
         $res = json_decode(file_get_contents($url), true);
 
-        $values = $res['values'];
+        $values = $res; // $values = $res['values'];
+        if (!is_array($values)) {
+            return false;
+        }
         $lastTag = array_shift($values);
 
         $name = $lastTag['name'];
@@ -56,7 +60,7 @@ class App
         }
         $hash = $lastTag['target']['hash'];
 
-        $link = '_devtools.php?act=download&hash=' . $hash;
+        $link = '_devtools.php?act=download&tag=' . $name; // $link = '_devtools.php?act=download&hash=' . $hash;
 
         if (version_compare($name, App::VERSION) === 1 || !empty($_GET['update'])) {
             $out = '<a href="' . $link . '">' . $name . '</a>';
@@ -77,13 +81,13 @@ class App
 
     public static function download()
     {
-        $hash = !empty($_GET['hash']) ? $_GET['hash'] : null;
+        $tag = !empty($_GET['tag']) ? $_GET['tag'] : null; // $hash = !empty($_GET['hash']) ? $_GET['hash'] : null;
 
-        if (is_null($hash)) {
+        if (is_null($tag)) { // if (is_null($hash)) {
             return false;
         }
 
-        $remoteFile = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
+        $remoteFile = App::URL . '/' . App::REPO . '/' . $tag . '/' . App::FILE; // $remoteFile = App::URL . '/' . App::REPO . '/raw/' . $hash . '/' . App::FILE;
         $remoteFileContent = file_get_contents($remoteFile);
 
         $localFilePath = __FILE__;
