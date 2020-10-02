@@ -23,8 +23,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '200624';
-    const VERSION = '0.0.28';
+    const DATE = '201002';
+    const VERSION = '0.0.29';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
@@ -649,11 +649,11 @@ if (!$processor->menu) {
 
             <div class="section examples">
 
-                <?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
+                <?php echo App::home(); ?>?auth=477dcf4d38c9d52e91bde1c37ba75432&c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld
 
                 <br><br>
 
-                0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+                0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?auth=477dcf4d38c9d52e91bde1c37ba75432&c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
 
             </div>
             <div class="section php-info-checks">
