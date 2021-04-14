@@ -1,4 +1,7 @@
 <?php
+if (!defined(__DIR__)) {
+    define('__DIR__', dirname(__FILE__));
+}
 session_id('-devtools-');
 session_start();
 if (isset($_GET['logout'])) {
@@ -23,8 +26,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '201002';
-    const VERSION = '0.0.29';
+    const DATE = '210414';
+    const VERSION = '0.0.30';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
@@ -47,7 +50,7 @@ class App
 
     public static function context()
     {
-        $opts = ['http' => ['method' => 'GET','header' => ['User-Agent: PHP']]];
+        $opts = array('http' => array('method' => 'GET','header' => array('User-Agent: PHP')));
         return stream_context_create($opts);
     }
 
@@ -214,7 +217,7 @@ class DevTools
         $zip = new ZipArchive();
 
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
-        $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
+        $destination = $params['destination'] == '.' ? __DIR__ : __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
 
         $out = array();
         if (!is_file($file) || !file_exists($file)) {
@@ -241,7 +244,7 @@ class DevTools
     public static function pharDataExtract($params)
     {
         $file = __DIR__ . DIRECTORY_SEPARATOR . $params['file'];
-        $destination = __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
+        $destination = $params['destination'] == '.' ? __DIR__ : __DIR__ . DIRECTORY_SEPARATOR . $params['destination'];
 
         $out = array();
         if (!is_file($file) || !file_exists($file)) {
@@ -279,7 +282,7 @@ class DevTools
         $log = !empty($params['log']) ? true : false;
         $mail = !empty($params['mail']) ? true : false;
 
-        $folders = !empty($params['folders']) ? $params['folders'] : [];
+        $folders = !empty($params['folders']) ? $params['folders'] : array();
 
         $lines = array();
 
@@ -373,36 +376,36 @@ class DevTools
 
     public static function dirModx($params)
     {
-        $params['folders'] = implode(',', [
+        $params['folders'] = implode(',', array(
             'core/cache',
             'assets/image-cache',
             'assets/components/gallery/cache',
             'assets/components/phpthumbof/cache',
-        ]);
+        ));
         DevTools::dir($params);
     }
 
     public static function dirPresta($params)
     {
-        $params['folders'] = implode(',', [
+        $params['folders'] = implode(',', array(
             'app/cache',
             'var/cache',
-        ]);
+        ));
         DevTools::dir($params);
     }
 
     public static function dirPresta16($params)
     {
-        $params['folders'] = implode(',', [
+        $params['folders'] = implode(',', array(
             'cache/smarty',
             'cache/tcpdf',
-        ]);
+        ));
         DevTools::dir($params);
     }
 
     public static function dirApx($params)
     {
-        $params['folders'] = implode(',', [
+        $params['folders'] = implode(',', array(
             '../../bootstrap/cache',
             '../../storage/debugbar',
             '../../storage/framework/cache/data',
@@ -410,7 +413,7 @@ class DevTools
             '../../storage/framework/testing',
             '../../storage/framework/views',
             '../../storage/logs',
-        ]);
+        ));
         DevTools::dir($params);
     }
 }
@@ -457,7 +460,7 @@ class Processor
     {
         if (!empty($this->command)) {
             // call a command
-            return call_user_func_array(['DevTools', $this->command], [$this->parameters()]);
+            return call_user_func_array(array('DevTools', $this->command), array($this->parameters()));
         }
     }
 }
