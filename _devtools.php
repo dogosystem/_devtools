@@ -86,6 +86,20 @@ class App
         return $out;
     }
 
+    public static function post()
+    {
+        return !empty($_POST) ? $_POST : null;
+    }
+
+    public static function processForm($post)
+    {
+        if (!empty($post) && !empty($post['action'])) {
+            $action = $post['action'];
+            unset($post['action']);
+            return call_user_func(array('DevTools', $action), $post);
+        }
+    }
+
     public static function action()
     {
         $action = !empty($_GET['act']) ? $_GET['act'] : null;
@@ -466,6 +480,11 @@ class Processor
 }
 
 // ====================================================================================================================
+
+$post = App::post();
+if (!empty($post)) {
+    App::processForm($post);
+}
 
 App::action();
 
