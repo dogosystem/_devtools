@@ -26,8 +26,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '210414';
-    const VERSION = '0.0.30';
+    const DATE = '230711';
+    const VERSION = '0.0.31';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
@@ -430,6 +430,23 @@ class DevTools
         ));
         DevTools::dir($params);
     }
+
+    public static function dbCheck($params)
+    {
+        $host = $params['db-host'];
+        $port = $params['db-port'];
+        $user = $params['db-user'];
+        $pass = $params['db-pass'];
+        $dbname = $params['db-name'];
+
+        try{
+            $dbh = new pdo( "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8", $user, $pass, array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+            var_dump($dbh);
+        }
+        catch(PDOException $ex){
+            echo(json_encode(array('outcome' => false, 'message' => 'Unable to connect')));
+        }
+    }
 }
 
 // ====================================================================================================================
@@ -559,11 +576,17 @@ if (!$processor->menu) {
             padding: 10px;
         }
         .app .menu,
+        .app .database,
         .app .examples {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+
+        .app .database * {
+            margin: 5px;
+        }
+
         .app .menu > a {
             margin: 10px;
         }
@@ -667,6 +690,17 @@ if (!$processor->menu) {
                 <a href="_devtools.php?c=dirModx&p=delete:1|echo:0|log:1|mail:0">clearModx</a>
                 <a href="_devtools.php?c=dirApx&p=delete:1|echo:0|log:1|mail:0">clearApx</a>
 
+            </div>
+
+            <div class="section database">
+                <form action="" method="post" accept-charset="utf-8">
+                    <input type="text" name="db-host" value="localhost" placeholder="host">
+                    <input type="text" name="db-port" value="3306" placeholder="port">
+                    <input type="text" name="db-user" value="user" placeholder="user">
+                    <input type="text" name="db-pass" value="password" placeholder="password">
+                    <input type="text" name="db-name" value="database" placeholder="database">
+                    <button name="action" value="dbCheck" type="submit">SPRAWDŹ</button>
+                </form>
             </div>
 
             <div class="section examples">
