@@ -26,8 +26,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 <?php
 class App
 {
-    const DATE = '230711';
-    const VERSION = '0.0.31';
+    const DATE = '250117';
+    const VERSION = '0.0.32';
     const NAME = '_devtools';
     const FILE = '_devtools.php';
     const API = 'https://api.github.com/repos'; // 'https://api.bitbucket.org/2.0/repositories';
@@ -186,6 +186,17 @@ class DevTools
         $out[] = 'test';
         $out[] = 'params: ' . print_r($params, true);
         self::a2b($out);
+    }
+
+    public static function crontest()
+    {
+        $logFile = realpath(__DIR__) . DIRECTORY_SEPARATOR . '_devtools-crontest.log';
+        $fp = fopen($logFile, 'a+');
+        $dt = date("Y-m-d H:i:s");
+        $crontest = $dt . ' CRONTEST';
+        fwrite($fp, $crontest . "\r\n");
+        fclose($fp);
+        self::a2b($crontest);
     }
 
     public static function getcwd()
@@ -662,6 +673,7 @@ if (!$processor->menu) {
 
             <div class="section menu">
                 <a href="_devtools.php?c=test&p=param1:value1|param2:value2">test</a>
+                <a href="_devtools.php?c=crontest">crontest</a>
                 <a href="_devtools.php?c=getcwd">getcwd</a>
                 <a href="_devtools.php?c=phpinfo">phpinfo</a>
                 <a href="_devtools.php?c=env">env</a>
@@ -710,6 +722,10 @@ if (!$processor->menu) {
                 <br><br>
 
                 0 4 * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?auth=477dcf4d38c9d52e91bde1c37ba75432&c=dirPresta&p=delete:1|echo:0|log:1|mail:1|email:email@domain.tld|from:from@domain.tld' > /dev/null 2>&1
+
+                <br><br>
+
+                * * * * * wget -O /dev/null -o /dev/null '<?php echo App::home(); ?>?auth=477dcf4d38c9d52e91bde1c37ba75432&c=crontest' > /dev/null 2>&1
 
             </div>
             <div class="section php-info-checks">
